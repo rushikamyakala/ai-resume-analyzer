@@ -206,4 +206,38 @@ public class GeminiAiService {
 
         return sb.toString();
     }
+    public String generateCoverLetter(String resumeText, String jobDescription) {
+String prompt = String.format("""
+    You are an expert HR manager and professional career coach.
+
+        Write a professional, personalized cover letter based on the following resume and job description.
+
+        Resume:
+        %s
+
+        Job Description:
+        %s
+
+        Instructions:
+        - Keep the cover letter between 300-400 words.
+        - Highlight the candidate's relevant skills and experience.
+        - Match the job description naturally.
+        - Use a professional and confident tone.
+        - Do not invent experience that is not in the resume.
+        - Return only the cover letter without extra explanations.
+        """, resumeText, jobDescription);
+        try {
+    String response = callGeminiApi(prompt);
+
+    if (response != null && !response.isBlank()) {
+        return response;
+    }
+
+    return "Unable to generate cover letter at the moment.";
+
+} catch (Exception e) {
+    logger.error("Error generating cover letter: {}", e.getMessage());
+    return "Error generating cover letter. Please try again.";
+}
+}
 }

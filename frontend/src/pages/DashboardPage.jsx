@@ -4,9 +4,15 @@ import { useAuth } from '../context/AuthContext'
 import { analysisApi } from '../api/services'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import {
-  FileText, Zap, BarChart2, TrendingUp, Upload, ArrowRight,
-  Clock, CheckCircle, AlertTriangle
-} from 'lucide-react'
+  FileText,
+  Zap,
+  BarChart2,
+  TrendingUp,
+  ArrowRight,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+} from 'lucide-react' 
 import toast from 'react-hot-toast'
 
 function ScoreRing({ score }) {
@@ -77,15 +83,86 @@ export default function DashboardPage() {
   )
 
   return (
-    <div className="space-y-8 animate-in">
+    <div className="space-y-10 animate-in">
       {/* Header */}
       <div>
         <h1 className="font-display text-3xl font-bold text-slate-100">
           Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'},{' '}
           <span className="text-primary-400">{user?.fullName?.split(' ')[0]}</span>
         </h1>
-        <p className="text-slate-400 mt-1 text-sm">Here's your resume analysis overview</p>
+        <p className="text-slate-400 mt-2 max-w-2xl leading-7">
+  Welcome to your AI-powered career dashboard. Analyze resumes, improve ATS
+  scores, generate AI cover letters, and prepare for interviews—all from one place.
+</p>
       </div>
+      <div className="card p-8 mt-6 bg-gradient-to-r from-primary-600/10 to-purple-600/10 border-primary-500/20">
+  <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+
+    <div className="max-w-2xl">
+      <h2 className="text-3xl font-display font-bold mb-4">
+        Build an ATS-Friendly Resume with AI
+      </h2>
+
+      <p className="text-slate-400 leading-7 mb-6">
+        Upload your resume, compare it with a job description,
+        receive an ATS compatibility score, discover missing keywords,
+        and get AI-powered suggestions to improve your chances of
+        landing interviews.
+      </p>
+
+      <div className="flex gap-4">
+        <Link to="/analyze" className="btn-primary">
+          Analyze Resume
+        </Link>
+
+        <Link to="/upload" className="btn-secondary">
+          Upload Resume
+        </Link>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-2 gap-4">
+
+      <div className="card p-4 w-36 text-center">
+        <h3 className="text-2xl font-bold text-primary-400">
+          ATS
+        </h3>
+        <p className="text-xs text-slate-400">
+          Resume Score
+        </p>
+      </div>
+
+      <div className="card p-4 w-36 text-center">
+        <h3 className="text-2xl font-bold text-emerald-400">
+          AI
+        </h3>
+        <p className="text-xs text-slate-400">
+          Suggestions
+        </p>
+      </div>
+
+      <div className="card p-4 w-36 text-center">
+        <h3 className="text-2xl font-bold text-yellow-400">
+          Keywords
+        </h3>
+        <p className="text-xs text-slate-400">
+          Matching
+        </p>
+      </div>
+
+      <div className="card p-4 w-36 text-center">
+        <h3 className="text-2xl font-bold text-pink-400">
+          Reports
+        </h3>
+        <p className="text-xs text-slate-400">
+          Analytics
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -107,14 +184,32 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {/* Chart */}
-        <div className="lg:col-span-2 card p-6">
-          <h2 className="section-title mb-5">ATS Score Trend</h2>
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-5">
+  <h2 className="section-title">ATS Score Trend</h2>
+
+  <Link
+    to="/analyze"
+    className="btn-primary text-sm px-4 py-2"
+  >
+    New Analysis
+  </Link>
+</div>
           {chartData.length === 0 ? (
             <div className="h-40 flex flex-col items-center justify-center gap-3 text-slate-500">
               <BarChart2 size={32} className="opacity-30" />
-              <p className="text-sm">No analysis data yet</p>
+              <div className="text-center">
+  <h3 className="text-lg font-semibold text-slate-200 mb-2">
+    No Resume Analysis Yet
+  </h3>
+
+  <p className="text-slate-400 text-sm mb-4">
+    Upload your first resume and compare it with a job description
+    to receive an AI-powered ATS score.
+  </p>
+</div>
               <Link to="/analyze" className="btn-primary text-sm px-4 py-2">Run First Analysis</Link>
             </div>
           ) : (
@@ -139,28 +234,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick actions */}
-        <div className="card p-6 flex flex-col gap-4">
-          <h2 className="section-title">Quick Actions</h2>
-          {[
-            { to: '/upload',           icon: Upload,   label: 'Upload Resume',      sub: 'Add a new PDF resume' },
-            { to: '/job-descriptions', icon: FileText, label: 'Add Job Description', sub: 'Paste a job posting' },
-            { to: '/analyze',          icon: Zap,      label: 'Run Analysis',        sub: 'Get your ATS score' },
-          ].map(({ to, icon: Icon, label, sub }) => (
-            <Link key={to} to={to} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800/60 transition-colors group">
-              <div className="w-9 h-9 bg-primary-600/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Icon size={16} className="text-primary-400" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-200">{label}</p>
-                <p className="text-xs text-slate-500">{sub}</p>
-              </div>
-              <ArrowRight size={14} className="text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
-            </Link>
-          ))}
-        </div>
-      </div>
+        
 
       {/* Recent analyses */}
+      </div>
       <div className="card p-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="section-title">Recent Analyses</h2>
@@ -172,7 +249,10 @@ export default function DashboardPage() {
         {history.length === 0 ? (
           <div className="text-center py-10 text-slate-500">
             <Clock size={32} className="mx-auto mb-3 opacity-30" />
-            <p className="text-sm">No analyses yet. Upload a resume and run your first analysis!</p>
+            <p className="text-sm max-w-md mx-auto">
+  Upload your resume, compare it with a job description,
+  and view your AI-powered ATS report here.
+</p>
           </div>
         ) : (
           <div className="space-y-3">

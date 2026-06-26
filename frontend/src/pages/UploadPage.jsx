@@ -90,14 +90,23 @@ export default function UploadPage() {
   return (
     <div className="space-y-8 animate-in max-w-2xl">
       <div>
-        <h1 className="font-display text-3xl font-bold text-slate-100">Upload Resume</h1>
-        <p className="text-slate-400 mt-1 text-sm">Upload your PDF resume. We'll extract the text and make it ready for analysis.</p>
+        <div className="card p-8 bg-gradient-to-r from-primary-600/20 to-indigo-600/10">
+    <h1 className="font-display text-4xl font-bold mb-3">
+        Upload Your Resume
+    </h1>
+
+    <p className="text-slate-400 max-w-3xl text-lg leading-8">
+        Upload your resume in PDF format. Our AI extracts the content,
+        understands your skills, and prepares it for ATS analysis,
+        keyword matching, and personalized improvement suggestions.
+    </p>
+</div>
       </div>
 
       {/* Dropzone */}
       <div
         {...getRootProps()}
-        className={`card cursor-pointer p-10 text-center transition-all duration-200 border-2 border-dashed
+        className={`card cursor-pointer p-16 text-center transition-all duration-200 border-2 border-dashed
           ${isDragActive
             ? 'border-primary-500 bg-primary-600/10'
             : 'border-slate-700 hover:border-slate-600 hover:bg-slate-800/30'
@@ -105,9 +114,9 @@ export default function UploadPage() {
       >
         <input {...getInputProps()} />
         <div className="flex flex-col items-center gap-4">
-          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors
+          <div className={`w-24 h-24 rounded-2xl flex items-center justify-center transition-colors
             ${isDragActive ? 'bg-primary-600/30' : 'bg-slate-800'}`}>
-            <Upload size={28} className={isDragActive ? 'text-primary-400' : 'text-slate-400'} />
+            <Upload size={42} className={isDragActive ? 'text-primary-400' : 'text-slate-400'} />
           </div>
           {isDragActive ? (
             <p className="text-primary-400 font-medium">Drop your PDF here!</p>
@@ -124,7 +133,36 @@ export default function UploadPage() {
           )}
         </div>
       </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
+  <div className="card p-5 text-center">
+    <p className="text-3xl font-bold text-primary-400">
+      {resumes.length}
+    </p>
+    <p className="text-slate-400 mt-2">
+      Uploaded Resumes
+    </p>
+  </div>
+
+  <div className="card p-5 text-center">
+    <p className="text-3xl font-bold text-emerald-400">
+      PDF
+    </p>
+    <p className="text-slate-400 mt-2">
+      Supported Format
+    </p>
+  </div>
+
+  <div className="card p-5 text-center">
+    <p className="text-3xl font-bold text-yellow-400">
+      AI
+    </p>
+    <p className="text-slate-400 mt-2">
+      Smart Text Extraction
+    </p>
+  </div>
+
+</div>
       {/* Selected file */}
       {file && (
         <div className="card p-4 flex items-center gap-4">
@@ -165,13 +203,13 @@ export default function UploadPage() {
           <div className="flex items-start gap-4">
             <CheckCircle size={22} className="text-emerald-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="font-medium text-emerald-300">Resume uploaded successfully!</p>
+              <p className="font-medium text-emerald-300">Resume Ready for AI Analysis 🚀</p>
               <p className="text-sm text-slate-400 mt-1">
                 <span className="font-medium text-slate-300">{uploaded.fileName}</span> is ready for analysis.
               </p>
               <div className="flex gap-3 mt-4">
                 <button onClick={() => navigate('/analyze')} className="btn-primary text-sm px-4 py-2">
-                  Analyze Now →
+                  Start ATS Analysis →
                 </button>
                 <button onClick={() => setUploaded(null)} className="btn-secondary text-sm px-4 py-2">
                   Upload Another

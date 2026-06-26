@@ -3,25 +3,35 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --bg: #0f172a;
-    --surface: #1e293b;
-    --border: #334155;
-    --text: #f1f5f9;
-    --muted: #94a3b8;
-  }
+ :root{
+  --bg:#f8fafc;
+  --surface:#ffffff;
+  --card:#ffffff;
+  --border:#e2e8f0;
+  --text:#0f172a;
+  --muted:#64748b;
+}
+
+.dark{
+  --bg:#020617;
+  --surface:#111827;
+  --card:#1e293b;
+  --border:#334155;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+}
 
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-surface-950 text-slate-100 font-sans antialiased;
-    background-image:
-      radial-gradient(ellipse at 20% 50%, rgba(99, 116, 245, 0.06) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(52, 211, 153, 0.04) 0%, transparent 50%);
-    min-height: 100vh;
-  }
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+}
 
   * {
     box-sizing: border-box;
@@ -45,8 +55,11 @@
 
 @layer components {
   .card {
-    @apply bg-surface-900 border border-slate-800 rounded-2xl;
-  }
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  transition: all .3s ease;
+}
 
   .card-glow {
     @apply card shadow-lg shadow-primary-500/5;
@@ -89,17 +102,30 @@
   .score-poor      { @apply text-red-400; }
 
   .nav-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-slate-100
-           hover:bg-slate-800/70 transition-all duration-200 font-medium text-sm;
-  }
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: var(--muted);
+  font-weight: 500;
+  transition: all .25s ease;
+}
+
+.nav-link:hover {
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--text);
+}
 
   .nav-link.active {
     @apply bg-primary-600/20 text-primary-400 border border-primary-500/20;
   }
 
   .section-title {
-    @apply font-display text-xl font-bold text-slate-100;
-  }
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 700;
+}
 
   .stat-card {
     @apply card p-5 flex flex-col gap-2 hover:border-slate-700 transition-colors duration-200;

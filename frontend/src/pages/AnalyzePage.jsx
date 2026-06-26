@@ -89,10 +89,18 @@ export default function AnalyzePage() {
 
   return (
     <div className="space-y-8 animate-in max-w-3xl">
-      <div>
-        <h1 className="font-display text-3xl font-bold text-slate-100">Analyze Resume</h1>
-        <p className="text-slate-400 mt-1 text-sm">Select a resume and job description to get your ATS score and AI suggestions</p>
-      </div>
+      <div className="card p-8 bg-gradient-to-r from-primary-600/20 to-purple-600/10">
+  <h1 className="font-display text-4xl font-bold mb-3">
+    AI Resume Analysis
+  </h1>
+
+  <p className="text-slate-300 text-lg leading-8 max-w-3xl">
+    Compare your resume with any job description using AI.
+    Receive an ATS compatibility score, keyword matching,
+    missing skills, and personalized suggestions to improve
+    your chances of getting shortlisted.
+  </p>
+</div>
 
       {/* Step 1 */}
       <div className="card p-6">
@@ -158,8 +166,14 @@ export default function AnalyzePage() {
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-primary-300">Processing your resume…</p>
-              <p className="text-xs text-slate-400 mt-0.5">Calculating ATS score, extracting keywords, and generating AI suggestions. This can take up to 30 seconds.</p>
+              <p className="text-sm font-medium text-primary-300">AI is analyzing your resume...</p>
+              <p className="text-xs text-slate-400 mt-0.5">✓ Extracting Resume
+
+✓ Matching Keywords
+
+✓ Calculating ATS Score
+
+✓ Generating AI Suggestions</p>
             </div>
           </div>
         </div>

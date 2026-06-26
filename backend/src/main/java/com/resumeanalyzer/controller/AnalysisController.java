@@ -25,6 +25,17 @@ public class AnalysisController {
         AnalysisResultResponse result = analysisService.analyzeResume(request);
         return ResponseEntity.ok(ApiResponse.success("Analysis completed successfully", result));
     }
+    @PostMapping("/cover-letter")
+public ResponseEntity<ApiResponse<String>> generateCoverLetter(
+        @RequestParam Long resumeId,
+        @RequestParam Long jobDescriptionId) {
+
+    String coverLetter = analysisService.generateCoverLetter(resumeId, jobDescriptionId);
+
+    return ResponseEntity.ok(
+            ApiResponse.success("Cover letter generated successfully", coverLetter)
+    );
+}
 
     @GetMapping("/history")
     public ResponseEntity<ApiResponse<List<AnalysisResultResponse>>> getAnalysisHistory() {

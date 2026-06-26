@@ -120,11 +120,6 @@ public class ResumeService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
-public User getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-    }
 
     public ResumeResponse renameResume(Long id, String newFileName) {
         if (newFileName == null || newFileName.trim().isEmpty()) {

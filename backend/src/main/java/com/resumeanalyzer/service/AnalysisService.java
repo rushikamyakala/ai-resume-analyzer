@@ -73,6 +73,20 @@ public class AnalysisService {
         AnalysisResult saved = analysisResultRepository.save(analysisResult);
         return mapToResponse(saved);
     }
+    public String generateCoverLetter(Long resumeId, Long jobDescriptionId) {
+
+    User currentUser = resumeService.getCurrentUser();
+
+    Resume resume = resumeService.getResumeEntityById(resumeId, currentUser);
+
+    JobDescription jobDescription =
+            jobDescriptionService.getJobDescriptionEntityById(jobDescriptionId, currentUser);
+
+    return geminiAiService.generateCoverLetter(
+            resume.getExtractedText(),
+            jobDescription.getDescription()
+    );
+}
 
     public List<AnalysisResultResponse> getUserAnalysisHistory() {
         User currentUser = resumeService.getCurrentUser();
