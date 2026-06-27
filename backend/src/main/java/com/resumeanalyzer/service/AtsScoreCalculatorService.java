@@ -101,13 +101,7 @@ public class AtsScoreCalculatorService {
             }
         }
 
-        // Extract single meaningful words
-        for (String word : words) {
-            word = word.trim().toLowerCase();
-            if (word.length() > 3 && isRelevantKeyword(word) && !isStopWord(word)) {
-                found.add(word);
-            }
-        }
+        // Extract single meaningful word
 
         return found;
     }
@@ -124,9 +118,8 @@ public class AtsScoreCalculatorService {
     }
 
     private boolean isRelevantKeyword(String word) {
-        return COMMON_TECH_KEYWORDS.contains(word) ||
-               word.length() > 4 && !isStopWord(word);
-    }
+    return COMMON_TECH_KEYWORDS.contains(word.toLowerCase());
+}
 
     private boolean isStopWord(String word) {
         Set<String> stopWords = Set.of(
@@ -136,7 +129,22 @@ public class AtsScoreCalculatorService {
             "how", "can", "may", "should", "must", "able", "work", "team",
             "year", "years", "experience", "using", "strong", "good", "knowledge",
             "understanding", "ability", "skills", "skill", "including", "such",
-            "also", "more", "than", "other", "into", "some", "each", "both"
+            "also", "more", "than", "other", "into", "some", "each", "both",
+            "location", "hyderabad", "telangana","india","employment",
+"available",
+"position",
+"company",
+"candidate",
+"responsibilities",
+"requirements",
+"qualification",
+"preferred",
+"apply",
+"opportunity",
+"office",
+"remote",
+"hybrid",
+"onsite"
         );
         return stopWords.contains(word.toLowerCase());
     }
