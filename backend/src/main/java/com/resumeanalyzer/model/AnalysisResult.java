@@ -22,6 +22,17 @@ public class AnalysisResult {
 
     @Column(nullable = false)
     private Double atsScore;
+    @Column(nullable = false)
+private Double skillsScore;
+
+@Column(nullable = false)
+private Double keywordScore;
+
+@Column(nullable = false)
+private Double sectionScore;
+
+@Column(nullable = false)
+private Double formattingScore;
 
     @Column(columnDefinition = "LONGTEXT")
     private String matchedKeywords;
@@ -33,10 +44,13 @@ public class AnalysisResult {
     private String aiSuggestions;
 
     @Column(columnDefinition = "LONGTEXT")
-    private String skillsAnalysis;
+private String skillsAnalysis;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime analyzedAt;
+@Column(columnDefinition = "LONGTEXT")
+private String priorityImprovements;
+
+@Column(nullable = false, updatable = false)
+private LocalDateTime analyzedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id", nullable = false)

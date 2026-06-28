@@ -31,10 +31,19 @@ export const jobApi = {
 
 // ── Analysis ──────────────────────────────────────
 export const analysisApi = {
-  analyze:      (data) => api.post('/analysis/analyze', data),
-  getHistory:   ()     => api.get('/analysis/history'),
-  getById:      (id)   => api.get(`/analysis/${id}`),
-  getDashboard: ()     => api.get('/analysis/dashboard/stats'),
+  analyze: (data) => api.post('/analysis/analyze', data),
+  getHistory: () => api.get('/analysis/history'),
+  getById: (id) => api.get(`/analysis/${id}`),
+  getDashboard: () => api.get('/analysis/dashboard/stats'),
+
+  downloadReport: (id) =>
+    api.get(`/analysis/${id}/report`, {
+      responseType: 'blob',
+    }),
+    generateCoverLetter: (resumeId, jobDescriptionId) =>
+  api.post(
+    `/analysis/cover-letter?resumeId=${resumeId}&jobDescriptionId=${jobDescriptionId}`
+  ),
 }
 
 // ── Admin ─────────────────────────────────────────

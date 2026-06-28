@@ -45,12 +45,14 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 bg-primary-600 rounded-2xl mb-4 shadow-lg shadow-primary-600/30">
             <Brain size={28} className="text-white" />
           </div>
-          <h1 className="font-display text-3xl font-bold text-slate-100">Welcome back</h1>
-          <p className="text-slate-400 mt-2 text-sm">Sign in to your AI Resume Analyzer account</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-100">Welcome Back 👋</h1>
+          <p className="text-slate-400 mt-2 text-sm">
+  Sign in to your CareerLens AI account
+</p>
         </div>
 
         {/* Card */}
-        <div className="card-glow p-8">
+        <div className="card-glow p-5 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="label">Email address</label>

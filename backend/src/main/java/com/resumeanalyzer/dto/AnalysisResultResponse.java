@@ -15,9 +15,18 @@ import java.util.List;
 public class AnalysisResultResponse {
     private Long id;
     private Double atsScore;
+    private Double skillsScore;
+
+private Double keywordScore;
+
+private Double sectionScore;
+
+private Double formattingScore;
     private List<String> matchedKeywords;
-    private List<String> missingKeywords;
-    private String aiSuggestions;
+private List<String> missingKeywords;
+private List<String> priorityImprovements;
+
+private String aiSuggestions;
     private String skillsAnalysis;
     private LocalDateTime analyzedAt;
     private String resumeFileName;

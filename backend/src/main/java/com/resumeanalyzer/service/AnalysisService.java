@@ -1,5 +1,7 @@
 package com.resumeanalyzer.service;
-
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +16,8 @@ import com.resumeanalyzer.model.Resume;
 import com.resumeanalyzer.model.User;
 import com.resumeanalyzer.repository.AnalysisResultRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -30,6 +34,7 @@ public class AnalysisService {
     private final JobDescriptionService jobDescriptionService;
     private final AtsScoreCalculatorService atsCalculator;
     private final GeminiAiService geminiAiService;
+    private final PdfReportService pdfReportService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AnalysisResultResponse analyzeResume(AnalyzeRequest request) {
@@ -57,18 +62,26 @@ public class AnalysisService {
 
         // Serialize keyword lists to JSON strings for DB storage
         String matchedJson = toJson(atsResult.matchedKeywords());
-        String missingJson = toJson(atsResult.missingKeywords());
+String missingJson = toJson(atsResult.missingKeywords());
+String priorityJson = toJson(atsResult.priorityImprovements());
 
         // Save analysis result
         AnalysisResult analysisResult = AnalysisResult.builder()
-                .atsScore(atsResult.score())
-                .matchedKeywords(matchedJson)
-                .missingKeywords(missingJson)
-                .aiSuggestions(aiSuggestions)
-                .skillsAnalysis(atsResult.skillsAnalysis())
-                .resume(resume)
-                .jobDescription(jobDescription)
-                .build();
+        .atsScore(atsResult.score())
+
+        .skillsScore(atsResult.skillsScore())
+        .keywordScore(atsResult.keywordScore())
+        .sectionScore(atsResult.sectionScore())
+        .formattingScore(atsResult.formattingScore())
+
+        .matchedKeywords(matchedJson)
+        .missingKeywords(missingJson)
+        .priorityImprovements(priorityJson)
+        .aiSuggestions(aiSuggestions)
+        .skillsAnalysis(atsResult.skillsAnalysis())
+        .resume(resume)
+        .jobDescription(jobDescription)
+        .build();
 
         AnalysisResult saved = analysisResultRepository.save(analysisResult);
         return mapToResponse(saved);
@@ -124,8 +137,13 @@ public class AnalysisService {
         return AnalysisResultResponse.builder()
                 .id(result.getId())
                 .atsScore(result.getAtsScore())
+                .skillsScore(result.getSkillsScore())
+.keywordScore(result.getKeywordScore())
+.sectionScore(result.getSectionScore())
+.formattingScore(result.getFormattingScore())
                 .matchedKeywords(fromJson(result.getMatchedKeywords()))
                 .missingKeywords(fromJson(result.getMissingKeywords()))
+                .priorityImprovements(fromJson(result.getPriorityImprovements()))
                 .aiSuggestions(result.getAiSuggestions())
                 .skillsAnalysis(result.getSkillsAnalysis())
                 .analyzedAt(result.getAnalyzedAt())
@@ -153,4 +171,21 @@ public class AnalysisService {
             return Collections.emptyList();
         }
     }
+    public ResponseEntity<byte[]> downloadPdfReport(Long id) {
+
+    User currentUser = resumeService.getCurrentUser();
+
+    AnalysisResult result = analysisResultRepository
+            .findByIdAndResumeUser(id, currentUser)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("Analysis not found"));
+
+    byte[] pdf = pdfReportService.generateReport(result);
+
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=ATS_Report.pdf")
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(pdf);
+}
 }

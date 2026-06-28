@@ -54,4 +54,11 @@ public ResponseEntity<ApiResponse<String>> generateCoverLetter(
         DashboardStatsResponse stats = analysisService.getDashboardStats();
         return ResponseEntity.ok(ApiResponse.success("Dashboard stats retrieved", stats));
     }
+    @GetMapping("/{id}/report")
+public ResponseEntity<byte[]> downloadReport(@PathVariable Long id) {
+
+    return analysisService.downloadPdfReport(id);
+
+}
+
 }

@@ -76,15 +76,38 @@ export default function HistoryPage() {
                   <p className="text-sm text-slate-400">{item.companyName}</p>
                   <ScoreBadge score={item.atsScore} />
                 </div>
-                <p className="text-xs text-slate-500 mt-1 truncate">Resume: {item.resumeFileName}</p>
-                <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500">
-                  <span>{item.matchedKeywords?.length ?? 0} keywords matched</span>
-                  <span>·</span>
-                  <span>{item.missingKeywords?.length ?? 0} missing</span>
-                  <span>·</span>
-                  <span>{new Date(item.analyzedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                </div>
+                <p className="text-xs text-slate-500 mt-1 truncate">
+  📄 {item.resumeFileName}
+</p>
+
+<p className="text-xs text-primary-400 mt-1">
+  Version #{item.id}
+</p>
+                <div className="flex items-center gap-4 mt-2 flex-wrap text-xs">
+
+  <span className="badge bg-emerald-500/10 text-emerald-400">
+    {item.matchedKeywords?.length} Matched
+  </span>
+
+  <span className="badge bg-red-500/10 text-red-400">
+    {item.missingKeywords?.length} Missing
+  </span>
+
+  <span className="badge bg-slate-700 text-slate-300">
+    {new Date(item.analyzedAt).toLocaleDateString()}
+  </span>
+
+</div>
               </div>
+              <div className="text-right mr-3">
+  <p className="text-xs text-slate-500">
+    ATS Score
+  </p>
+
+  <p className="text-2xl font-bold text-primary-400">
+    {item.atsScore.toFixed(0)}%
+  </p>
+</div>
               <ArrowRight size={15} className="text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
             </Link>
           ))}

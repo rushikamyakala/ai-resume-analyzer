@@ -35,12 +35,17 @@ public class AtsScoreCalculatorService {
         "nlp", "computer vision", "opencv"
     ));
 
-    public record AtsAnalysisResult(
-        double score,
-        List<String> matchedKeywords,
-        List<String> missingKeywords,
-        String skillsAnalysis
-    ) {}
+   public record AtsAnalysisResult(
+    double score,
+    double skillsScore,
+    double keywordScore,
+    double sectionScore,
+    double formattingScore,
+    List<String> matchedKeywords,
+    List<String> missingKeywords,
+    List<String> priorityImprovements,
+    String skillsAnalysis
+) {}
 
     public AtsAnalysisResult calculateScore(String resumeText, String jobDescription) {
         String resumeLower = resumeText.toLowerCase();
@@ -62,92 +67,67 @@ public class AtsScoreCalculatorService {
         }
 
         // Calculate base score from keyword match
-        double keywordScore = jdKeywords.isEmpty() ? 0 :
-                (double) matched.size() / jdKeywords.size() * 100;
+        double keywordScore = jdKeywords.isEmpty()
+        ? 0
+        : (double) matched.size() / jdKeywords.size() * 100;
 
-        // Apply bonuses
-        double lengthBonus = calculateLengthBonus(resumeText);
-        double sectionBonus = calculateSectionBonus(resumeLower);
+double skillsScore = keywordScore;
 
-        // Final weighted score
-        double finalScore = (keywordScore * 0.70) + (lengthBonus * 0.15) + (sectionBonus * 0.15);
-        finalScore = Math.min(100, Math.round(finalScore * 10.0) / 10.0);
+double sectionScore = calculateSectionBonus(resumeLower);
+
+double formattingScore = calculateLengthBonus(resumeText);
+
+double finalScore =
+        (skillsScore * 0.50) +
+        (keywordScore * 0.20) +
+        (sectionScore * 0.20) +
+        (formattingScore * 0.10);
+
+finalScore = Math.min(100, Math.round(finalScore * 10.0) / 10.0);
 
         String skillsAnalysis = buildSkillsAnalysis(matched, missing, finalScore);
 
-        return new AtsAnalysisResult(finalScore, matched, missing, skillsAnalysis);
+        List<String> priorityImprovements = buildPriorityImprovements(missing);
+
+return new AtsAnalysisResult(
+        finalScore,
+        skillsScore,
+        keywordScore,
+        sectionScore,
+        formattingScore,
+        matched,
+        missing,
+        priorityImprovements,
+        skillsAnalysis
+);
     }
 
     private Set<String> extractKeywords(String text) {
-        Set<String> found = new LinkedHashSet<>();
 
-        // Check for known tech keywords
-        for (String keyword : COMMON_TECH_KEYWORDS) {
-            if (containsKeyword(text, keyword)) {
-                found.add(keyword);
-            }
+    Set<String> found = new LinkedHashSet<>();
+
+    String lower = text.toLowerCase();
+
+    // Only extract known technical keywords
+    for (String keyword : COMMON_TECH_KEYWORDS) {
+
+        if (containsKeyword(lower, keyword)) {
+            found.add(keyword);
         }
 
-        // Extract additional multi-word phrases (2-3 words) from job description
-        String[] words = text.split("[\\s,;:.()\\[\\]]+");
-        for (int i = 0; i < words.length - 1; i++) {
-            String w1 = words[i].trim();
-            String w2 = words[i + 1].trim();
-            if (w1.length() > 2 && w2.length() > 2) {
-                String phrase = w1 + " " + w2;
-                if (isRelevantKeyword(phrase)) {
-                    found.add(phrase);
-                }
-            }
-        }
-
-        // Extract single meaningful word
-
-        return found;
     }
 
-    private boolean containsKeyword(String text, String keyword) {
-        // Check as whole word or phrase
-        String escapedKeyword = keyword.replace(".", "\\.");
-        String pattern = "(?i)(^|[\\s,;:.()\\[\\]/])(" + escapedKeyword + ")($|[\\s,;:.()\\[\\]/])";
-        try {
-            return text.matches(".*" + pattern + ".*") || text.contains(keyword);
-        } catch (Exception e) {
-            return text.contains(keyword);
-        }
-    }
-
-    private boolean isRelevantKeyword(String word) {
-    return COMMON_TECH_KEYWORDS.contains(word.toLowerCase());
+    return found;
 }
 
-    private boolean isStopWord(String word) {
-        Set<String> stopWords = Set.of(
-            "the", "and", "for", "with", "that", "this", "from", "have", "will",
-            "are", "was", "were", "been", "has", "had", "not", "you", "your",
-            "our", "their", "they", "what", "which", "who", "when", "where",
-            "how", "can", "may", "should", "must", "able", "work", "team",
-            "year", "years", "experience", "using", "strong", "good", "knowledge",
-            "understanding", "ability", "skills", "skill", "including", "such",
-            "also", "more", "than", "other", "into", "some", "each", "both",
-            "location", "hyderabad", "telangana","india","employment",
-"available",
-"position",
-"company",
-"candidate",
-"responsibilities",
-"requirements",
-"qualification",
-"preferred",
-"apply",
-"opportunity",
-"office",
-"remote",
-"hybrid",
-"onsite"
-        );
-        return stopWords.contains(word.toLowerCase());
-    }
+    private boolean containsKeyword(String text, String keyword) {
+
+    String escaped = java.util.regex.Pattern.quote(keyword);
+
+    return text.matches("(?s).*\\b" + escaped + "\\b.*");
+
+}
+
 
     private double calculateLengthBonus(String resumeText) {
         int length = resumeText.trim().split("\\s+").length;
@@ -182,4 +162,37 @@ public class AtsScoreCalculatorService {
         sb.append(missing.isEmpty() ? "All key skills found!" : String.join(", ", missing));
         return sb.toString();
     }
+    private List<String> buildPriorityImprovements(List<String> missing) {
+
+    List<String> improvements = new ArrayList<>();
+
+    for (String skill : missing) {
+
+        switch (skill.toLowerCase()) {
+
+            case "docker" ->
+                    improvements.add("Add a Docker project or mention Docker experience.");
+
+            case "redis" ->
+                    improvements.add("Learn Redis caching and include it in a project.");
+
+            case "ci/cd" ->
+                    improvements.add("Add GitHub Actions or CI/CD pipeline experience.");
+
+            case "junit" ->
+                    improvements.add("Write unit tests using JUnit and mention testing.");
+
+            case "spring security" ->
+                    improvements.add("Implement authentication using Spring Security.");
+
+            case "rest" ->
+                    improvements.add("Highlight REST API development in your projects.");
+
+            default ->
+                    improvements.add("Include practical experience with " + skill + ".");
+        }
+    }
+
+    return improvements.stream().limit(5).toList();
+}
 }

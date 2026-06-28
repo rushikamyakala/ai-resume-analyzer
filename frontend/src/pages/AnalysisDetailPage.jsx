@@ -4,8 +4,17 @@ import { analysisApi } from '../api/services'
 import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
 import {
-  ArrowLeft, CheckCircle, XCircle, Brain, Target,
-  TrendingUp, AlertTriangle, Zap
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
+  Brain,
+  Target,
+  TrendingUp,
+  AlertTriangle,
+  Zap,
+  Download,
+  FileText,
+  Copy
 } from 'lucide-react'
 
 function ScoreRing({ score }) {
@@ -27,7 +36,7 @@ function ScoreRing({ score }) {
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
-          <span className="font-display font-bold text-4xl text-slate-100">{score.toFixed(0)}</span>
+          <span className="font-display font-bold text-3xl sm:text-4xl text-slate-100">{score.toFixed(0)}</span>
           <span className="text-slate-400 text-xs font-medium">ATS Score</span>
         </div>
       </div>
@@ -53,6 +62,65 @@ export default function AnalysisDetailPage() {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('suggestions')
+  const [coverLetter, setCoverLetter] = useState("")
+const [loadingCoverLetter, setLoadingCoverLetter] = useState(false)
+  const handleDownloadReport = async () => {
+
+  try {
+
+    const res = await analysisApi.downloadReport(id)
+
+    const url = window.URL.createObjectURL(new Blob([res.data]))
+
+    const link = document.createElement("a")
+
+    link.href = url
+
+    link.download = "ATS_Report.pdf"
+
+    document.body.appendChild(link)
+
+    link.click()
+
+    link.remove()
+
+    window.URL.revokeObjectURL(url)
+
+    toast.success("ATS Report downloaded!")
+
+  } catch {
+
+    toast.error("Failed to download report")
+
+  }
+
+}
+const handleGenerateCoverLetter = async () => {
+
+  try {
+
+    setLoadingCoverLetter(true)
+
+    const res = await analysisApi.generateCoverLetter(
+      result.resumeId,
+      result.jobDescriptionId
+    )
+
+    setCoverLetter(res.data.data)
+
+    toast.success("Cover letter generated!")
+
+  } catch {
+
+    toast.error("Failed to generate cover letter")
+
+  } finally {
+
+    setLoadingCoverLetter(false)
+
+  }
+
+}
 
   useEffect(() => {
     analysisApi.getById(id)
@@ -101,7 +169,7 @@ export default function AnalysisDetailPage() {
         </div>
 
         {/* Stats */}
-        <div className="md:col-span-2 grid grid-cols-2 gap-4">
+        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
             {
               icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-400/10',
@@ -132,9 +200,67 @@ export default function AnalysisDetailPage() {
           ))}
         </div>
       </div>
+       {/* ATS Breakdown */}
+<div className="card p-6">
+  <h3 className="font-semibold text-slate-200 mb-5">
+    ATS Score Breakdown
+  </h3>
 
+  <div className="space-y-5">
+
+    {[
+      {
+        label: "Skills Match",
+        value: result.skillsScore
+      },
+      {
+        label: "Keyword Match",
+        value: result.keywordScore
+      },
+      {
+        label: "Resume Sections",
+        value: result.sectionScore
+      },
+      {
+        label: "Formatting",
+        value: result.formattingScore
+      }
+
+    ].map(item => (
+
+      <div key={item.label}>
+
+        <div className="flex justify-between text-sm mb-1">
+
+          <span className="text-slate-300">
+            {item.label}
+          </span>
+
+          <span className="font-semibold text-primary-400">
+            {item.value?.toFixed(0)}%
+          </span>
+
+        </div>
+
+        <div className="w-full h-2 rounded-full bg-slate-800">
+
+          <div
+            className="h-2 rounded-full bg-primary-500 transition-all duration-700"
+            style={{
+              width: `${item.value}%`
+            }}
+          />
+
+        </div>
+
+      </div>
+
+    ))}
+
+  </div>
+</div>
       {/* Keywords section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1  md:grid-cols-2 gap-5">
         {/* Matched */}
         <div className="card p-5">
           <h3 className="font-semibold text-slate-200 text-sm mb-3 flex items-center gap-2">
@@ -171,6 +297,31 @@ export default function AnalysisDetailPage() {
           )}
         </div>
       </div>
+      {result.priorityImprovements?.length > 0 && (
+  <div className="card p-5">
+    <h3 className="font-semibold text-slate-200 text-sm mb-4 flex items-center gap-2">
+      <TrendingUp size={16} className="text-yellow-400" />
+      Priority Improvements
+    </h3>
+
+    <div className="space-y-3">
+      {result.priorityImprovements.map((item, index) => (
+        <div
+          key={index}
+          className="flex items-start gap-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20 p-3"
+        >
+          <div className="w-6 h-6 rounded-full bg-yellow-500 text-black text-xs flex items-center justify-center font-bold">
+            {index + 1}
+          </div>
+
+          <p className="text-sm text-slate-300">
+            {item}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
       {/* Tabs: AI Suggestions / Skills Analysis */}
       <div className="card overflow-hidden">
@@ -213,12 +364,82 @@ export default function AnalysisDetailPage() {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3">
-        <Link to="/analyze" className="btn-primary flex items-center gap-2 text-sm">
-          <Zap size={14}/> Analyze Again
-        </Link>
-        <Link to="/history" className="btn-secondary text-sm">← Back to History</Link>
-      </div>
+      <div className="card p-6">
+
+  <h3 className="font-semibold text-slate-200 mb-4">
+    AI Cover Letter
+  </h3>
+
+  <button
+    onClick={handleGenerateCoverLetter}
+    disabled={loadingCoverLetter}
+    className="btn-primary flex items-center gap-2 mb-5"
+  >
+    <FileText size={15} />
+
+    {loadingCoverLetter
+      ? "Generating..."
+      : "Generate Cover Letter"}
+  </button>
+
+  {coverLetter && (
+
+    <div className="space-y-4">
+
+      <textarea
+        readOnly
+        value={coverLetter}
+        className="input-field min-h-[350px]"
+      />
+
+      <button
+        className="btn-secondary flex items-center gap-2"
+        onClick={() => {
+
+          navigator.clipboard.writeText(coverLetter)
+
+          toast.success("Copied!")
+
+        }}
+      >
+
+        <Copy size={15} />
+
+        Copy Cover Letter
+
+      </button>
+
+    </div>
+
+  )}
+
+</div>
+      <div className="flex flex-wrap gap-3">
+
+  <button
+      onClick={handleDownloadReport}
+      className="btn-primary flex items-center gap-2 text-sm"
+  >
+      <Download size={15}/>
+      Download ATS Report
+  </button>
+
+  <Link
+      to="/analyze"
+      className="btn-secondary flex items-center gap-2 text-sm"
+  >
+      <Zap size={15}/>
+      Analyze Again
+  </Link>
+
+  <Link
+      to="/history"
+      className="btn-secondary text-sm"
+  >
+      ← Back to History
+  </Link>
+
+</div>
     </div>
   )
 }

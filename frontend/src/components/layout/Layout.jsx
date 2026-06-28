@@ -29,9 +29,9 @@ export default function Layout() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen bg-[var(--bg)]">
       {/* Sidebar */}
-      <aside className="w-72 flex-shrink-0 bg-[var(--card)] border-r border-[var(--border)] flex flex-col transition-all duration-300">
+      <aside className="hidden lg:flex lg:w-72 flex-col bg-[var(--card)] border-r border-[var(--border)]">
         {/* Logo */}
         <div className="p-6 border-b border-[var(--border)]">
           <div className="flex items-center gap-3">
@@ -39,8 +39,12 @@ export default function Layout() {
               <Brain size={18} className="text-white" />
             </div>
             <div>
-              <p className="font-display font-bold text-[var(--text)] text-sm leading-tight">AI Resume</p>
-              <p className="font-display font-bold text-primary-400 text-sm leading-tight">Analyzer</p>
+              <p className="font-display font-bold text-[var(--text)] text-sm leading-tight">
+  CareerLens
+</p>
+<p className="font-display font-bold text-primary-400 text-sm leading-tight">
+  AI
+</p>
             </div>
           </div>
         </div>
@@ -106,10 +110,10 @@ export default function Layout() {
 
       {/* Main content */}
       <main
-  className="flex-1 overflow-y-auto transition-all duration-300"
+  className="flex-1 overflow-y-auto w-full"
   style={{ background: "var(--bg)" }}
 >
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <Outlet />
         </div>
       </main>

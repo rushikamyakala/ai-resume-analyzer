@@ -165,7 +165,7 @@ export default function DashboardPage() {
 </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {[
           { label: 'Resumes', value: stats?.totalResumes ?? 0,        icon: FileText,  color: 'text-blue-400',    bg: 'bg-blue-400/10' },
           { label: 'Analyses',value: stats?.totalAnalyses ?? 0,       icon: Zap,       color: 'text-primary-400', bg: 'bg-primary-400/10' },
